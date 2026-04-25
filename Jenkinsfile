@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    tools {
+    /*tools {
         jdk 'Java17'
-    }
+    }*/
 
     environment {
         APP_NAME = 'CurrencyExchange'
@@ -13,7 +13,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://your-git-repo-url.git'
+                git 'https://github.com/haribabukosuri/CurrencyExchange.git'
             }
         }
 
