@@ -27,7 +27,11 @@ pipeline {
             steps {
                 sh '''
                     # Kill existing process if running
-                    pkill -f ${APP_NAME} || true
+                    #pkill -f ${APP_NAME} || true
+                    
+                    timeout(time: 1, unit: 'MINUTES') {
+                        sh 'pkill -f [C]urrencyExchange || true\'
+                    }
                     
                     # Run the jar. Note: assumes only one executable jar exists in libs
                     nohup java -jar build/libs/${APP_NAME}-*.jar > app.log 2>&1 &
