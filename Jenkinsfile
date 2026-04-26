@@ -25,19 +25,22 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh '''
-                    # Kill existing process if running
-                    #pkill -f ${APP_NAME} || true
-                    
+                script {
+                    // 1. Create a regex pattern to prevent pkill from killing itself.
+                    // This turns "CurrencyExchange" into "[C]urrencyExchange" dynamically.
+                    def pkillPattern = "${APP_NAME}".replaceFirst(/^(.)/, '[$1]')
+
+                    // 2. Run the kill command with a proper Jenkins timeout wrapper
                     timeout(time: 1, unit: 'MINUTES') {
-                        sh 'pkill -f [C]urrencyExchange || true\'
+                        sh "pkill -f ${pkillPattern} || true"
                     }
-                    
-                    # Run the jar. Note: assumes only one executable jar exists in libs
-                    nohup java -jar build/libs/${APP_NAME}-*.jar > app.log 2>&1 &
-                '''
+                }
+
+                // 3. Launch the new process
+                sh "nohup java -jar build/libs/${APP_NAME}-*.jar > app.log 2>&1 &"
             }
         }
+
 
         stage('Health Check') {
             steps {
